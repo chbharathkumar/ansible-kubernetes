@@ -1,0 +1,42 @@
+---
+
+- name: Install Docker's dependencies
+  apt:
+    name: "{{ docker__package_dependencies + docker__pip_dependencies }}"
+
+- name: Add Docker's public PGP key to the APT keyring
+  apt_key:
+    id: "{{ docker__apt_key_id }}"
+    url: "{{ docker__apt_key_url }}"
+
+- name: Configure Docker's upstream APT repository
+  apt_repository:
+    repo: "{{ docker__apt_repository }}"
+    update_cache: true
+
+- name: Install Docker
+  apt:
+    name: "docker-{{ docker__edition }}=18.06.3~ce~3-0~ubuntu"
+    state: "{{ docker__state }}"
+
+- name: installing the kubectl kubelet kubeadm
+  shell: apt-get install -y kubelet kubeadm kubectl
+
+- name: installing the network(Canal Network)
+  shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+
+- name: Export the Kubeconfig
+  shell: export KUBECONFIG=/etc/kubernetes/admin.conf
+
+- name: Changing the kube config file path
+  shell: "{{ item }}"
+  with_items:       
+             - mkdir -p $HOME/.kube
+             - cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+             - chown $(id -u):$(id -g) $HOME/.kube/config
+- name: Installing the RBAC
+  shell: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/canal/rbac.yaml
+ 
+- name: Installing the Canal Network
+  shell: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/canal/canal.yaml
+
