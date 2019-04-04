@@ -25,6 +25,10 @@
 - name: adding
   shell: sudo echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
+- name: update
+  apt:
+    update_cache: true
+    
 - name: installing the kubectl kubelet kubeadm
   shell: apt-get install -y kubelet kubeadm kubectl
 
