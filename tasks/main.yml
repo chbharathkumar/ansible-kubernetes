@@ -29,20 +29,39 @@
   shell: apt-get install -y kubelet kubeadm kubectl
 
 - name: installing the network(Canal Network)
+  when: inventory_hostname in groups['master']
   shell: kubeadm init --pod-network-cidr=10.244.0.0/16
 
 - name: Export the Kubeconfig
+  when: inventory_hostname in groups['master']
   shell: export KUBECONFIG=/etc/kubernetes/admin.conf
 
 - name: Changing the kube config file path
+  when: inventory_hostname in groups['master']
   shell: "{{ item }}"
   with_items:       
              - mkdir -p $HOME/.kube
              - cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
              - chown $(id -u):$(id -g) $HOME/.kube/config
 - name: Installing the RBAC
+  when: inventory_hostname in groups['master']
   shell: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/canal/rbac.yaml
  
 - name: Installing the Canal Network
+  when: inventory_hostname in groups['master']
   shell: kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/canal/canal.yaml
 
+- name: kubeadm token
+  when: inventory_hostname in groups['master']
+  command: kubeadm token create --print-join-command
+  register: result
+
+- local_action: copy content={{ result.stdout }} dest=/root/bharath6.sh
+- pause:
+    minutes: 1
+- name: copied the token
+  copy: src=/root/bharath6.sh dest=/tmp/bharath6.sh
+
+- name: runing sh file
+  when: inventory_hostname in groups['nodes']
+  command: sh /tmp/bharath6.sh
