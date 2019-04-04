@@ -61,8 +61,8 @@
   register: result
 
 - local_action: copy content={{ result.stdout }} dest=/root/bharath6.sh
-- pause:
-    minutes: 1
+  when: inventory_hostname in groups['master']
+
 - name: copied the token
   copy: src=/root/bharath6.sh dest=/tmp/bharath6.sh
 
