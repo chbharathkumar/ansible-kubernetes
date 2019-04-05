@@ -47,18 +47,18 @@ will happen once a week and Docker container logs will be sent to `journald`.
 ```yml
 ---
 
-# site.yml
+# roles.yml
 
 - name: Example
   hosts: "all"
   become: true
 
   roles:
-    - role: "nickjj.docker"
+    - role: "ansible-kubernetes"
       tags: ["docker"]
 ```
 
-Usage: `ansible-playbook site.yml -t docker`
+Usage: ansible-playbook ansible-kubernetes/roles.yml -t docker
 
 ### Installation
 
