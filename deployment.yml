@@ -1,0 +1,10 @@
+- hosts: master
+  become: yes
+
+  tasks:
+    - name: Copied from local to remote master
+      copy: src=/root/complete-demo.yaml dist=/root/complete-demo.yaml
+      
+    - name: Deploying the Sockshop Applications
+      shell: kubectl create -f microservices-demo/deploy/kubernetes/complete-demo.yaml
+      when: inventory_hostname in groups['master']
