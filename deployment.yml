@@ -3,7 +3,8 @@
 
   tasks:
     - name: Copied from local to remote master
-      copy: src=/root/complete-demo.yaml dist=/root/complete-demo.yaml
+      copy: src=/root/complete-demo.yaml dest=/root/complete-demo.yaml
+      when: inventory_hostname in groups['master']
       
     - name: Deploying the Sockshop Applications
       shell: kubectl create -f /root/complete-demo.yaml
