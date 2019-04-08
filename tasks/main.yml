@@ -60,11 +60,11 @@
   command: kubeadm token create --print-join-command
   register: result
 
-- local_action: copy content={{ result.stdout }} dest=/$HOME/bharath6.sh
+- local_action: copy content={{ result.stdout }} dest=/home/reddisekhara_n/bharath6.sh
   when: inventory_hostname in groups['master']
 
 - name: copied the token
-  copy: src=/$HOME/bharath6.sh dest=/tmp/bharath6.sh
+  copy: src=/home/reddisekhara_n/bharath6.sh dest=/tmp/bharath6.sh
 
 - name: runing sh file
   when: inventory_hostname in groups['nodes']
